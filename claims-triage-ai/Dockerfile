@@ -21,10 +21,12 @@ COPY . .
 # Build Next.js (standalone output)
 RUN npm run build
 
-# Copy Python source into standalone output so subprocess can find it
+# Copy Python source + data into standalone output so subprocesses can find them
 RUN cp -r src/lib .next/standalone/src/lib && \
     cp -r src/data .next/standalone/src/data && \
-    cp -r eval .next/standalone/eval
+    cp -r eval .next/standalone/eval && \
+    cp -r scripts .next/standalone/scripts && \
+    cp -r .next/static .next/standalone/.next/static
 
 EXPOSE 3000
 

@@ -1,0 +1,111 @@
+/* ============================================
+   CTC Portfolio Navigation
+   ============================================ */
+
+.ctc-nav {
+  background: white;
+  border-bottom: 2px solid #1a3a5c;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.ctc-nav-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 56px;
+}
+
+.ctc-nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+}
+
+.ctc-nav-logo-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1a3a5c;
+  letter-spacing: 1px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.ctc-nav-logo-sep {
+  color: #dee2e6;
+  font-weight: 300;
+  font-size: 1.3rem;
+}
+
+.ctc-nav-logo-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a6b5c;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.ctc-nav-tabs {
+  display: flex;
+  gap: 0;
+  height: 56px;
+  align-items: stretch;
+}
+
+.ctc-nav-tab {
+  display: flex;
+  align-items: center;
+  padding: 0 1.25rem;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #666;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  font-family: Arial, Helvetica, sans-serif;
+  white-space: nowrap;
+}
+
+.ctc-nav-tab:hover {
+  color: #1a3a5c;
+  background: rgba(26, 58, 92, 0.04);
+}
+
+.ctc-nav-tab.active {
+  color: #1a3a5c;
+  font-weight: 600;
+  border-bottom-color: #1a6b5c;
+}
+
+@media (max-width: 768px) {
+  .ctc-nav-inner {
+    padding: 0 1rem;
+    flex-wrap: wrap;
+    height: auto;
+  }
+
+  .ctc-nav-logo {
+    padding: 0.75rem 0;
+  }
+
+  .ctc-nav-logo-title {
+    display: none;
+  }
+
+  .ctc-nav-tabs {
+    width: 100%;
+    height: auto;
+    border-top: 1px solid #dee2e6;
+    overflow-x: auto;
+  }
+
+  .ctc-nav-tab {
+    padding: 0.6rem 1rem;
+    font-size: 0.82rem;
+    border-bottom-width: 2px;
+  }
+}
