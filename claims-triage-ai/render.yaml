@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: claims-triage-ai
+    runtime: docker
+    dockerfilePath: ./claims-triage-ai/Dockerfile
+    dockerContext: ./claims-triage-ai
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
