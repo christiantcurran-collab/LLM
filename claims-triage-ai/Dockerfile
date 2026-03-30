@@ -9,7 +9,7 @@ WORKDIR /app
 
 # Install Python dependencies
 COPY requirements.txt .
-RUN pip3 install --no-cache-dir --break-system-packages -r requirements.txt
+RUN pip3 install --no-cache-dir --break-system-packages --root-user-action=ignore -r requirements.txt
 
 # Install Node dependencies
 COPY package.json package-lock.json* ./
