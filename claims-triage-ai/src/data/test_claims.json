@@ -1,0 +1,162 @@
+[
+  {
+    "id": 1,
+    "title": "Straightforward property damage",
+    "policy_number": "POL-2024-001234",
+    "claim_amount": 15000,
+    "claim_date": "2024-09-15",
+    "claim_type": "property",
+    "description": "Storm damage to roof tiles and guttering at insured commercial premises. Building surveyor has assessed damage and provided repair estimate of £15,000. No structural damage. Temporary repairs already completed to prevent further water ingress.",
+    "expected": {
+      "priority": "fast_track",
+      "fraud_risk": "low",
+      "exclusion_risk": false,
+      "regulatory_flags": [],
+      "reserve_estimate_range": [12000, 20000]
+    }
+  },
+  {
+    "id": 2,
+    "title": "Motor claim on expired policy",
+    "policy_number": "POL-2024-001235",
+    "claim_amount": 45000,
+    "claim_date": "2024-09-20",
+    "claim_type": "motor",
+    "description": "Fleet vehicle involved in multi-vehicle collision on the M25. Driver sustained minor injuries. Third party vehicle also damaged. Claim for vehicle repair and third-party liability.",
+    "expected": {
+      "priority": "standard",
+      "fraud_risk": "low",
+      "exclusion_risk": true,
+      "regulatory_flags": ["expired_policy"],
+      "reserve_estimate_range": [40000, 55000]
+    }
+  },
+  {
+    "id": 3,
+    "title": "High-value cyber claim with Solvency II trigger",
+    "policy_number": "POL-2024-001236",
+    "claim_amount": 2000000,
+    "claim_date": "2024-08-10",
+    "claim_type": "cyber",
+    "description": "Major ransomware attack affecting all production systems. Business interruption estimated at £1.5M with additional £500K in forensic investigation and remediation costs. Attacker exploited zero-day vulnerability. Customer data potentially compromised — 50,000 records.",
+    "expected": {
+      "priority": "complex",
+      "fraud_risk": "low",
+      "exclusion_risk": false,
+      "regulatory_flags": ["solvency_ii_large_loss", "ico_notification"],
+      "reserve_estimate_range": [1800000, 2500000]
+    }
+  },
+  {
+    "id": 4,
+    "title": "Suspicious new policy claim — fraud indicators",
+    "policy_number": "POL-2024-001237",
+    "claim_amount": 190000,
+    "claim_date": "2024-11-15",
+    "claim_type": "property",
+    "description": "Total loss of commercial property contents due to fire. No witnesses. Fire brigade report pending. Cash settlement preferred. All inventory records reportedly destroyed in the fire. Claim amount represents 95% of sum insured.",
+    "expected": {
+      "priority": "siu_referral",
+      "fraud_risk": "high",
+      "exclusion_risk": false,
+      "regulatory_flags": [],
+      "reserve_estimate_range": [0, 190000]
+    }
+  },
+  {
+    "id": 5,
+    "title": "D&O claim with exclusion match",
+    "policy_number": "POL-2024-001238",
+    "claim_amount": 1500000,
+    "claim_date": "2024-10-01",
+    "claim_type": "D&O",
+    "description": "Shareholder derivative action against three board members for alleged breach of fiduciary duty. The claim relates to circumstances first reported to the company in March 2024 — prior to policy inception in April 2024. Defence costs estimated at £1.5M.",
+    "expected": {
+      "priority": "refer",
+      "fraud_risk": "low",
+      "exclusion_risk": true,
+      "regulatory_flags": ["solvency_ii_large_loss"],
+      "reserve_estimate_range": [0, 1500000]
+    }
+  },
+  {
+    "id": 6,
+    "title": "Marine cargo loss — Lloyd's jurisdiction",
+    "policy_number": "POL-2024-001239",
+    "claim_amount": 750000,
+    "claim_date": "2024-07-20",
+    "claim_type": "marine",
+    "description": "Container of high-value electronics lost overboard during severe weather in the North Atlantic. Bill of lading and cargo manifest available. Vessel master's report confirms storm force conditions. Salvage not attempted due to depth.",
+    "expected": {
+      "priority": "complex",
+      "fraud_risk": "low",
+      "exclusion_risk": false,
+      "regulatory_flags": ["lloyds_claims_scheme"],
+      "reserve_estimate_range": [650000, 800000]
+    }
+  },
+  {
+    "id": 7,
+    "title": "Small liability claim — fast track candidate",
+    "policy_number": "POL-2024-001240",
+    "claim_amount": 5000,
+    "claim_date": "2024-10-15",
+    "claim_type": "liability",
+    "description": "Client alleges minor data entry error in consulting report caused £5,000 in rework costs. Insured accepts responsibility. Clean claims history, policy held for 3 years. Straightforward professional negligence.",
+    "expected": {
+      "priority": "fast_track",
+      "fraud_risk": "low",
+      "exclusion_risk": false,
+      "regulatory_flags": [],
+      "reserve_estimate_range": [4000, 7000]
+    }
+  },
+  {
+    "id": 8,
+    "title": "Property flood claim — exclusion applies",
+    "policy_number": "POL-2024-001241",
+    "claim_amount": 350000,
+    "claim_date": "2024-10-20",
+    "claim_type": "property",
+    "description": "Extensive flood damage to ground floor of commercial property following river breach. Water levels reached 1.2 metres. All ground-floor stock, fixtures, and electrical systems destroyed. Building requires full ground-floor refit.",
+    "expected": {
+      "priority": "standard",
+      "fraud_risk": "low",
+      "exclusion_risk": true,
+      "regulatory_flags": [],
+      "reserve_estimate_range": [0, 350000]
+    }
+  },
+  {
+    "id": 9,
+    "title": "Repeat claimant motor claim — fraud pattern",
+    "policy_number": "POL-2024-001242",
+    "claim_amount": 85000,
+    "claim_date": "2024-09-01",
+    "claim_type": "motor",
+    "description": "Delivery van theft from insured premises. Vehicle found burnt out 3 days later. This is the fourth claim on this policy in 12 months. Previous claims were for windscreen damage, minor collision, and tool theft from vehicle.",
+    "expected": {
+      "priority": "complex",
+      "fraud_risk": "high",
+      "exclusion_risk": false,
+      "regulatory_flags": [],
+      "reserve_estimate_range": [60000, 90000]
+    }
+  },
+  {
+    "id": 10,
+    "title": "Cyber claim requiring ICO notification",
+    "policy_number": "POL-2024-001243",
+    "claim_amount": 800000,
+    "claim_date": "2024-11-01",
+    "claim_type": "cyber",
+    "description": "Data breach discovered affecting customer payment card information. Approximately 25,000 customer records exposed. Breach traced to compromised third-party payment processor. Costs include forensic investigation, customer notification, credit monitoring, and potential regulatory fines.",
+    "expected": {
+      "priority": "complex",
+      "fraud_risk": "low",
+      "exclusion_risk": false,
+      "regulatory_flags": ["ico_notification"],
+      "reserve_estimate_range": [700000, 1000000]
+    }
+  }
+]
