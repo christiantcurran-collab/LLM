@@ -17,10 +17,13 @@ import os
 import sys
 from datetime import datetime
 
-# Add lib path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src", "lib"))
+# Add lib paths
+_eval_dir = os.path.dirname(os.path.abspath(__file__))
+_lib_dir = os.path.join(_eval_dir, "..", "src", "lib")
+sys.path.insert(0, _lib_dir)
+sys.path.insert(0, os.path.join(_lib_dir, "claude"))
 
-from claude.client import run_triage
+from client import run_triage
 
 
 def load_test_claims():

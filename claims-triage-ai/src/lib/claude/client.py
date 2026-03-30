@@ -9,13 +9,16 @@ import os
 import sys
 import time
 
-# Add parent paths so services can be imported
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+# Add parent paths so services can be imported regardless of cwd
+_this_dir = os.path.dirname(os.path.abspath(__file__))
+_lib_dir = os.path.dirname(_this_dir)
+sys.path.insert(0, _lib_dir)
+sys.path.insert(0, _this_dir)
 
 import anthropic
-from claude.tools import TOOLS
-from claude.system_prompt import SYSTEM_PROMPT
-from claude.schemas import TriageDecision
+from tools import TOOLS
+from system_prompt import SYSTEM_PROMPT
+from schemas import TriageDecision
 from services.policy import policy_lookup
 from services.fraud import fraud_score
 from services.regulatory import regulatory_check
