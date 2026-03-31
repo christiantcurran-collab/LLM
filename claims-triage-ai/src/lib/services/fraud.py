@@ -21,7 +21,8 @@ FRAUD_KEYWORDS = [
 
 
 def _load_policy(policy_number: str) -> dict | None:
-    data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "data", "policies.json")
+    _root = os.environ.get("PROJECT_ROOT", os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", ".."))
+    data_path = os.path.join(_root, "src", "data", "policies.json")
     with open(data_path, "r") as f:
         policies = json.load(f)
     for p in policies:

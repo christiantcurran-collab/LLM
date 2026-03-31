@@ -10,9 +10,15 @@ import os
 import sys
 import time
 
-# Resolve paths from this file's real location
-_THIS_DIR = os.path.dirname(os.path.realpath(__file__))
-_LIB_DIR = os.path.dirname(_THIS_DIR)
+# Resolve source root from PROJECT_ROOT env var (set by API route),
+# falling back to __file__-relative resolution.
+_PROJECT_ROOT = os.environ.get("PROJECT_ROOT", "")
+if _PROJECT_ROOT and os.path.isdir(os.path.join(_PROJECT_ROOT, "src", "lib", "claude")):
+    _CLAUDE_DIR = os.path.join(_PROJECT_ROOT, "src", "lib", "claude")
+    _LIB_DIR = os.path.join(_PROJECT_ROOT, "src", "lib")
+else:
+    _CLAUDE_DIR = os.path.dirname(os.path.realpath(__file__))
+    _LIB_DIR = os.path.dirname(_CLAUDE_DIR)
 
 
 def _import_from_file(module_name: str, file_path: str):
@@ -23,9 +29,9 @@ def _import_from_file(module_name: str, file_path: str):
     return mod
 
 
-_tools_mod = _import_from_file("tools", os.path.join(_THIS_DIR, "tools.py"))
-_prompt_mod = _import_from_file("system_prompt", os.path.join(_THIS_DIR, "system_prompt.py"))
-_schemas_mod = _import_from_file("schemas", os.path.join(_THIS_DIR, "schemas.py"))
+_tools_mod = _import_from_file("tools", os.path.join(_CLAUDE_DIR, "tools.py"))
+_prompt_mod = _import_from_file("system_prompt", os.path.join(_CLAUDE_DIR, "system_prompt.py"))
+_schemas_mod = _import_from_file("schemas", os.path.join(_CLAUDE_DIR, "schemas.py"))
 _policy_mod = _import_from_file("policy", os.path.join(_LIB_DIR, "services", "policy.py"))
 _fraud_mod = _import_from_file("fraud", os.path.join(_LIB_DIR, "services", "fraud.py"))
 _regulatory_mod = _import_from_file("regulatory", os.path.join(_LIB_DIR, "services", "regulatory.py"))

@@ -3,15 +3,19 @@ import { spawn } from "child_process";
 import path from "path";
 
 function findProjectRoot(): string {
-  let dir = process.cwd();
-  if (require("fs").existsSync(path.join(dir, "eval", "run_eval.py"))) {
-    return dir;
+  const marker = path.join("eval", "run_eval.py");
+  const candidates = [
+    process.cwd(),
+    path.resolve(process.cwd(), ".."),
+    path.resolve(process.cwd(), "../.."),
+    "/app",
+  ];
+  for (const dir of candidates) {
+    if (require("fs").existsSync(path.join(dir, marker))) {
+      return dir;
+    }
   }
-  const parent = path.dirname(dir);
-  if (require("fs").existsSync(path.join(parent, "eval", "run_eval.py"))) {
-    return parent;
-  }
-  return dir;
+  return process.cwd();
 }
 
 function runEvalPython(): Promise<Record<string, unknown>> {
@@ -21,6 +25,7 @@ function runEvalPython(): Promise<Record<string, unknown>> {
     const py = spawn("python", [scriptPath, "--json"], {
       stdio: ["pipe", "pipe", "pipe"],
       cwd: root,
+      env: { ...process.env, PROJECT_ROOT: root },
     });
 
     let stdout = "";

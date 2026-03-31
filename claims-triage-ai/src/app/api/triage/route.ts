@@ -11,26 +11,31 @@ interface ClaimPayload {
 }
 
 function findProjectRoot(): string {
-  // Walk up from this file's compiled location to find src/
-  let dir = process.cwd();
-  // In standalone mode, cwd is /app but server.js is in /app/.next/standalone
-  // The source files are at /app/src/ since we don't copy them into standalone
-  if (require("fs").existsSync(path.join(dir, "src", "lib", "claude", "client.py"))) {
-    return dir;
+  // Check for tools.py (not traced by Next.js standalone, so only exists in real source)
+  const marker = path.join("src", "lib", "claude", "tools.py");
+  const candidates = [
+    process.cwd(),
+    path.resolve(process.cwd(), ".."),
+    path.resolve(process.cwd(), "../.."),
+    "/app",
+  ];
+  for (const dir of candidates) {
+    if (require("fs").existsSync(path.join(dir, marker))) {
+      return dir;
+    }
   }
-  // Fallback: try parent directories
-  const parent = path.dirname(dir);
-  if (require("fs").existsSync(path.join(parent, "src", "lib", "claude", "client.py"))) {
-    return parent;
-  }
-  return dir;
+  return process.cwd();
 }
 
 function runTriagePython(payload: ClaimPayload): Promise<Record<string, unknown>> {
   return new Promise((resolve, reject) => {
     const root = findProjectRoot();
     const scriptPath = path.join(root, "src", "lib", "claude", "client.py");
-    const py = spawn("python", [scriptPath], { stdio: ["pipe", "pipe", "pipe"], cwd: root });
+    const py = spawn("python", [scriptPath], {
+      stdio: ["pipe", "pipe", "pipe"],
+      cwd: root,
+      env: { ...process.env, PROJECT_ROOT: root },
+    });
 
     let stdout = "";
     let stderr = "";

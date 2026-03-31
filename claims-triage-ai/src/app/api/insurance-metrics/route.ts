@@ -8,15 +8,19 @@ interface MetricsRequest {
 }
 
 function findProjectRoot(): string {
-  let dir = process.cwd();
-  if (require("fs").existsSync(path.join(dir, "scripts", "python", "calculate_bond_metrics.py"))) {
-    return dir;
+  const marker = path.join("scripts", "python", "calculate_bond_metrics.py");
+  const candidates = [
+    process.cwd(),
+    path.resolve(process.cwd(), ".."),
+    path.resolve(process.cwd(), "../.."),
+    "/app",
+  ];
+  for (const dir of candidates) {
+    if (require("fs").existsSync(path.join(dir, marker))) {
+      return dir;
+    }
   }
-  const parent = path.dirname(dir);
-  if (require("fs").existsSync(path.join(parent, "scripts", "python", "calculate_bond_metrics.py"))) {
-    return parent;
-  }
-  return dir;
+  return process.cwd();
 }
 
 function runPythonMetrics(bonds: Bond[]): Promise<Bond[]> {

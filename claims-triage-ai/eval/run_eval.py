@@ -19,7 +19,11 @@ import sys
 from datetime import datetime
 
 _EVAL_DIR = os.path.dirname(os.path.realpath(__file__))
-_CLIENT_PATH = os.path.join(_EVAL_DIR, "..", "src", "lib", "claude", "client.py")
+_PROJECT_ROOT = os.environ.get("PROJECT_ROOT", os.path.join(_EVAL_DIR, ".."))
+_CLIENT_PATH = os.path.join(_PROJECT_ROOT, "src", "lib", "claude", "client.py")
+
+# Ensure PROJECT_ROOT is set for client.py's own imports
+os.environ["PROJECT_ROOT"] = _PROJECT_ROOT
 
 
 def _import_from_file(module_name, file_path):
@@ -29,7 +33,7 @@ def _import_from_file(module_name, file_path):
     return mod
 
 
-_client_mod = _import_from_file("client", os.path.realpath(_CLIENT_PATH))
+_client_mod = _import_from_file("client", _CLIENT_PATH)
 run_triage = _client_mod.run_triage
 
 
