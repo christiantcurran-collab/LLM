@@ -9,7 +9,7 @@ _POLICIES = None
 def _load_policies():
     global _POLICIES
     if _POLICIES is None:
-        data_path = os.path.join(os.path.dirname(__file__), "..", "..", "data", "policies.json")
+        data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "data", "policies.json")
         with open(data_path, "r") as f:
             policies = json.load(f)
         _POLICIES = {p["policy_number"]: p for p in policies}

@@ -13,21 +13,28 @@ Total: 50 points across 10 claims
 """
 
 import json
+import importlib.util
 import os
 import sys
 from datetime import datetime
 
-# Add lib paths
-_eval_dir = os.path.dirname(os.path.abspath(__file__))
-_lib_dir = os.path.join(_eval_dir, "..", "src", "lib")
-sys.path.insert(0, _lib_dir)
-sys.path.insert(0, os.path.join(_lib_dir, "claude"))
+_EVAL_DIR = os.path.dirname(os.path.realpath(__file__))
+_CLIENT_PATH = os.path.join(_EVAL_DIR, "..", "src", "lib", "claude", "client.py")
 
-from client import run_triage
+
+def _import_from_file(module_name, file_path):
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+_client_mod = _import_from_file("client", os.path.realpath(_CLIENT_PATH))
+run_triage = _client_mod.run_triage
 
 
 def load_test_claims():
-    path = os.path.join(os.path.dirname(__file__), "..", "src", "data", "test_claims.json")
+    path = os.path.join(_EVAL_DIR, "..", "src", "data", "test_claims.json")
     with open(path, "r") as f:
         return json.load(f)
 
@@ -213,7 +220,7 @@ def main():
                 print(f"     -> {r['details']}")
 
         # Save results
-        results_dir = os.path.join(os.path.dirname(__file__), "results")
+        results_dir = os.path.join(_EVAL_DIR, "results")
         os.makedirs(results_dir, exist_ok=True)
         out_path = os.path.join(results_dir, f"eval_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
         with open(out_path, "w") as f:

@@ -5,23 +5,39 @@ until Claude returns a final triage decision.
 """
 
 import json
+import importlib.util
 import os
 import sys
 import time
 
-# Add parent paths so services can be imported regardless of cwd
-_this_dir = os.path.dirname(os.path.abspath(__file__))
-_lib_dir = os.path.dirname(_this_dir)
-sys.path.insert(0, _lib_dir)
-sys.path.insert(0, _this_dir)
+# Resolve paths from this file's real location
+_THIS_DIR = os.path.dirname(os.path.realpath(__file__))
+_LIB_DIR = os.path.dirname(_THIS_DIR)
+
+
+def _import_from_file(module_name: str, file_path: str):
+    """Import a module from an absolute file path."""
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+_tools_mod = _import_from_file("tools", os.path.join(_THIS_DIR, "tools.py"))
+_prompt_mod = _import_from_file("system_prompt", os.path.join(_THIS_DIR, "system_prompt.py"))
+_schemas_mod = _import_from_file("schemas", os.path.join(_THIS_DIR, "schemas.py"))
+_policy_mod = _import_from_file("policy", os.path.join(_LIB_DIR, "services", "policy.py"))
+_fraud_mod = _import_from_file("fraud", os.path.join(_LIB_DIR, "services", "fraud.py"))
+_regulatory_mod = _import_from_file("regulatory", os.path.join(_LIB_DIR, "services", "regulatory.py"))
 
 import anthropic
-from tools import TOOLS
-from system_prompt import SYSTEM_PROMPT
-from schemas import TriageDecision
-from services.policy import policy_lookup
-from services.fraud import fraud_score
-from services.regulatory import regulatory_check
+
+TOOLS = _tools_mod.TOOLS
+SYSTEM_PROMPT = _prompt_mod.SYSTEM_PROMPT
+TriageDecision = _schemas_mod.TriageDecision
+policy_lookup = _policy_mod.policy_lookup
+fraud_score = _fraud_mod.fraud_score
+regulatory_check = _regulatory_mod.regulatory_check
 
 
 def execute_tool(tool_name: str, tool_input: dict) -> dict:
