@@ -7,10 +7,23 @@ interface MetricsRequest {
   bonds: Bond[];
 }
 
+function findProjectRoot(): string {
+  let dir = process.cwd();
+  if (require("fs").existsSync(path.join(dir, "scripts", "python", "calculate_bond_metrics.py"))) {
+    return dir;
+  }
+  const parent = path.dirname(dir);
+  if (require("fs").existsSync(path.join(parent, "scripts", "python", "calculate_bond_metrics.py"))) {
+    return parent;
+  }
+  return dir;
+}
+
 function runPythonMetrics(bonds: Bond[]): Promise<Bond[]> {
   return new Promise((resolve, reject) => {
-    const scriptPath = path.join(process.cwd(), "scripts", "python", "calculate_bond_metrics.py");
-    const py = spawn("python", [scriptPath], { stdio: ["pipe", "pipe", "pipe"] });
+    const root = findProjectRoot();
+    const scriptPath = path.join(root, "scripts", "python", "calculate_bond_metrics.py");
+    const py = spawn("python", [scriptPath], { stdio: ["pipe", "pipe", "pipe"], cwd: root });
 
     let stdout = "";
     let stderr = "";

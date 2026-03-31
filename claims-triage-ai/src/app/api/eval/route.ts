@@ -2,12 +2,25 @@ import { NextResponse } from "next/server";
 import { spawn } from "child_process";
 import path from "path";
 
+function findProjectRoot(): string {
+  let dir = process.cwd();
+  if (require("fs").existsSync(path.join(dir, "eval", "run_eval.py"))) {
+    return dir;
+  }
+  const parent = path.dirname(dir);
+  if (require("fs").existsSync(path.join(parent, "eval", "run_eval.py"))) {
+    return parent;
+  }
+  return dir;
+}
+
 function runEvalPython(): Promise<Record<string, unknown>> {
   return new Promise((resolve, reject) => {
-    const scriptPath = path.join(process.cwd(), "eval", "run_eval.py");
+    const root = findProjectRoot();
+    const scriptPath = path.join(root, "eval", "run_eval.py");
     const py = spawn("python", [scriptPath, "--json"], {
       stdio: ["pipe", "pipe", "pipe"],
-      cwd: process.cwd(),
+      cwd: root,
     });
 
     let stdout = "";

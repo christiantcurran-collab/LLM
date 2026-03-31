@@ -10,10 +10,27 @@ interface ClaimPayload {
   description: string;
 }
 
+function findProjectRoot(): string {
+  // Walk up from this file's compiled location to find src/
+  let dir = process.cwd();
+  // In standalone mode, cwd is /app but server.js is in /app/.next/standalone
+  // The source files are at /app/src/ since we don't copy them into standalone
+  if (require("fs").existsSync(path.join(dir, "src", "lib", "claude", "client.py"))) {
+    return dir;
+  }
+  // Fallback: try parent directories
+  const parent = path.dirname(dir);
+  if (require("fs").existsSync(path.join(parent, "src", "lib", "claude", "client.py"))) {
+    return parent;
+  }
+  return dir;
+}
+
 function runTriagePython(payload: ClaimPayload): Promise<Record<string, unknown>> {
   return new Promise((resolve, reject) => {
-    const scriptPath = path.join(process.cwd(), "src", "lib", "claude", "client.py");
-    const py = spawn("python", [scriptPath], { stdio: ["pipe", "pipe", "pipe"] });
+    const root = findProjectRoot();
+    const scriptPath = path.join(root, "src", "lib", "claude", "client.py");
+    const py = spawn("python", [scriptPath], { stdio: ["pipe", "pipe", "pipe"], cwd: root });
 
     let stdout = "";
     let stderr = "";
