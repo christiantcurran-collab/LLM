@@ -100,7 +100,7 @@ def run_triage(claim_payload: dict) -> dict:
         turns += 1
 
         response = client.messages.create(
-            model="claude-sonnet-4-5-latest",
+            model="claude-sonnet-4-5-20250514",
             max_tokens=4096,
             system=SYSTEM_PROMPT,
             tools=TOOLS,
