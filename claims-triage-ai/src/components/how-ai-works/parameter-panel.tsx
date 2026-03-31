@@ -2,22 +2,12 @@
 
 import { useState } from "react";
 import type { HowAIWorksParams, LastChangedParam } from "@/lib/how-ai-works-utils";
-import { DEFAULT_PARAMS, SYSTEM_PROMPTS, CONTEXT_OPTIONS, LOGIT_BIAS_OPTIONS, STOP_OPTIONS } from "@/lib/how-ai-works-utils";
+import { DEFAULT_PARAMS, SYSTEM_PROMPTS, CONTEXT_OPTIONS, STOP_OPTIONS } from "@/lib/how-ai-works-utils";
 
 interface ParameterPanelProps {
   params: HowAIWorksParams;
   onChange: (params: HowAIWorksParams, changed: LastChangedParam) => void;
   onReset: () => void;
-}
-
-function getLogitBiasForOption(key: string): Record<string, number> | null {
-  switch (key) {
-    case "suppress_door": return { "suppress": -100 };
-    case "boost_volcano": return { "boost": 5 };
-    case "boost_fish_pond": return { "boost2": 3 };
-    case "suppress_top3": return { "suppress3": -100 };
-    default: return null;
-  }
 }
 
 export function ParameterPanel({ params, onChange, onReset }: ParameterPanelProps) {
@@ -26,11 +16,9 @@ export function ParameterPanel({ params, onChange, onReset }: ParameterPanelProp
   const contextKey = Object.entries(CONTEXT_OPTIONS).find(([, v]) => v === params.context)?.[0] || "None";
   const promptKey = Object.entries(SYSTEM_PROMPTS).find(([, v]) => v === params.system_prompt)?.[0] || "Helpful Assistant";
   const stopKey = Object.entries(STOP_OPTIONS).find(([, v]) => JSON.stringify(v) === JSON.stringify(params.stop))?.[0] || "None";
-  const biasLabel = params.logit_bias === null ? "None" :
-    Object.entries(LOGIT_BIAS_OPTIONS).find(([, v]) => v !== "none" && params.logit_bias !== null)?.[0] || "None";
 
   const handleCopy = () => {
-    const cfg = { model: params.model, temperature: params.temperature, top_p: params.top_p, max_tokens: params.max_tokens };
+    const cfg = { model: params.model, temperature: params.temperature, top_p: params.top_p, top_k: params.top_k, max_tokens: params.max_tokens };
     navigator.clipboard.writeText(JSON.stringify(cfg, null, 2));
   };
 
@@ -59,6 +47,18 @@ export function ParameterPanel({ params, onChange, onReset }: ParameterPanelProp
           </div>
           <input type="range" className="how-llm-slider" min={0.1} max={1} step={0.1} value={params.top_p}
             onChange={(e) => onChange({ ...params, top_p: parseFloat(e.target.value) }, "topP")} />
+          <div className="how-llm-param-hint">Nucleus sampling — only considers tokens within this cumulative probability.</div>
+        </div>
+
+        <div className="how-llm-param-group">
+          <div className="how-llm-param-label">
+            <span>Top-k</span>
+            <span className="how-llm-param-value">{params.top_k}</span>
+          </div>
+          <input type="range" className="how-llm-slider" min={1} max={100} step={1} value={params.top_k}
+            onChange={(e) => onChange({ ...params, top_k: parseInt(e.target.value) }, "topK")} />
+          <div className="how-llm-param-range-labels"><span>Focused (1)</span><span>Diverse (100)</span></div>
+          <div className="how-llm-param-hint">Only consider the top K most probable tokens at each step.</div>
         </div>
 
         <div className="how-llm-param-group">
@@ -102,27 +102,12 @@ export function ParameterPanel({ params, onChange, onReset }: ParameterPanelProp
             <hr className="how-llm-divider" />
             <div className="how-llm-param-group">
               <div className="how-llm-param-label">
-                <span>Frequency Penalty</span>
-                <span className="how-llm-param-value">{params.frequency_penalty.toFixed(1)}</span>
-              </div>
-              <input type="range" className="how-llm-slider" min={0} max={2} step={0.1} value={params.frequency_penalty}
-                onChange={(e) => onChange({ ...params, frequency_penalty: parseFloat(e.target.value) }, "frequencyPenalty")} />
-            </div>
-            <div className="how-llm-param-group">
-              <div className="how-llm-param-label">
-                <span>Presence Penalty</span>
-                <span className="how-llm-param-value">{params.presence_penalty.toFixed(1)}</span>
-              </div>
-              <input type="range" className="how-llm-slider" min={0} max={2} step={0.1} value={params.presence_penalty}
-                onChange={(e) => onChange({ ...params, presence_penalty: parseFloat(e.target.value) }, "presencePenalty")} />
-            </div>
-            <div className="how-llm-param-group">
-              <div className="how-llm-param-label">
                 <span>Max Tokens</span>
                 <span className="how-llm-param-value">{params.max_tokens}</span>
               </div>
               <input type="range" className="how-llm-slider" min={1} max={50} step={1} value={params.max_tokens}
                 onChange={(e) => onChange({ ...params, max_tokens: parseInt(e.target.value) }, "maxTokens")} />
+              <div className="how-llm-param-hint">How many tokens to generate. At 1, you see a single next-word prediction.</div>
             </div>
             <div className="how-llm-param-group">
               <div className="how-llm-param-label"><span>Stop Sequence</span></div>
@@ -130,33 +115,7 @@ export function ParameterPanel({ params, onChange, onReset }: ParameterPanelProp
                 onChange={(e) => onChange({ ...params, stop: STOP_OPTIONS[e.target.value] }, "stop")}>
                 {Object.keys(STOP_OPTIONS).map((k) => <option key={k} value={k}>{k}</option>)}
               </select>
-            </div>
-            <div className="how-llm-param-group">
-              <div className="how-llm-param-label"><span>Logit Bias</span></div>
-              <select className="how-llm-select" value={biasLabel}
-                onChange={(e) => {
-                  const val = LOGIT_BIAS_OPTIONS[e.target.value];
-                  onChange({ ...params, logit_bias: val === "none" ? null : getLogitBiasForOption(val) }, "logitBias");
-                }}>
-                {Object.keys(LOGIT_BIAS_OPTIONS).map((k) => <option key={k} value={k}>{k}</option>)}
-              </select>
-            </div>
-            <div className="how-llm-param-group">
-              <div className="how-llm-param-label">
-                <span>N (Completions)</span>
-                <span className="how-llm-param-value">{params.n}</span>
-              </div>
-              <input type="range" className="how-llm-slider" min={1} max={10} step={1} value={params.n}
-                onChange={(e) => onChange({ ...params, n: parseInt(e.target.value) }, "n")} />
-            </div>
-            <div className="how-llm-param-group">
-              <div className="how-llm-param-label">
-                <span>Seed</span>
-                <button className={`how-llm-seed-btn ${params.seed !== null ? "active" : ""}`}
-                  onClick={() => onChange({ ...params, seed: params.seed === null ? 42 : null }, "seed")}>
-                  {params.seed !== null ? `On (${params.seed})` : "Off"}
-                </button>
-              </div>
+              <div className="how-llm-param-hint">Generation halts when this sequence is produced.</div>
             </div>
           </>
         )}

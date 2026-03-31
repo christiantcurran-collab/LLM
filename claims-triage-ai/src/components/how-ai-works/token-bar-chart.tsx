@@ -12,11 +12,10 @@ interface TokenBarChartProps {
   bars: TokenBar[];
   previousBars: TokenBar[] | null;
   topPCutoff: number;
-  logitBiasActive: boolean;
   isApproximate: boolean;
 }
 
-export function TokenBarChart({ bars, previousBars, topPCutoff, logitBiasActive, isApproximate }: TokenBarChartProps) {
+export function TokenBarChart({ bars, previousBars, topPCutoff, isApproximate }: TokenBarChartProps) {
   const [ghostBars, setGhostBars] = useState<TokenBar[] | null>(null);
   const [showGhost, setShowGhost] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);

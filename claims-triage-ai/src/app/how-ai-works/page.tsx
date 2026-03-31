@@ -134,7 +134,6 @@ export default function HowAIWorksPage() {
                   bars={currentBars}
                   previousBars={previousBars}
                   topPCutoff={params.top_p}
-                  logitBiasActive={params.logit_bias !== null}
                   isApproximate={!isExact}
                 />
                 {currentEntry && (

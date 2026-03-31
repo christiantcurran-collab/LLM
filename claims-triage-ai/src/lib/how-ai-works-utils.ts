@@ -37,15 +37,11 @@ export interface HowAIWorksParams {
   model: string;
   temperature: number;
   top_p: number;
+  top_k: number;
   max_tokens: number;
-  frequency_penalty: number;
-  presence_penalty: number;
   system_prompt: string;
   context: string | null;
   stop: string[] | null;
-  logit_bias: Record<string, number> | null;
-  n: number;
-  seed: number | null;
 }
 
 export const SYSTEM_PROMPT_LABELS: Record<string, string> = {
@@ -73,14 +69,6 @@ export const CONTEXT_OPTIONS: Record<string, string | null> = {
   "Stormy Night": "Here is some information about the weather: A storm is moving in. Thunder is audible, rain is starting, and wind is rattling the garden gate.",
 };
 
-export const LOGIT_BIAS_OPTIONS: Record<string, string> = {
-  "None": "none",
-  "Suppress 'door'": "suppress_door",
-  "Boost 'volcano'": "boost_volcano",
-  "Boost 'fish' + 'pond'": "boost_fish_pond",
-  "Suppress top 3 defaults": "suppress_top3",
-};
-
 export const STOP_OPTIONS: Record<string, string[] | null> = {
   "None": null,
   "Stop at full stop (.)": ["."],
@@ -92,15 +80,11 @@ export const DEFAULT_PARAMS: HowAIWorksParams = {
   model: "model-medium",
   temperature: 0.7,
   top_p: 1.0,
+  top_k: 40,
   max_tokens: 1,
-  frequency_penalty: 0.0,
-  presence_penalty: 0.0,
   system_prompt: "You are a helpful assistant.",
   context: null,
   stop: null,
-  logit_bias: null,
-  n: 1,
-  seed: null,
 };
 
 function paramDistance(a: HowAIWorksParams, b: HowAIWorksParams): number {
@@ -109,18 +93,14 @@ function paramDistance(a: HowAIWorksParams, b: HowAIWorksParams): number {
   // Numeric parameters — normalized differences
   dist += Math.abs(a.temperature - b.temperature) / 2.0;
   dist += Math.abs(a.top_p - b.top_p);
+  dist += Math.abs(a.top_k - b.top_k) / 100;
   dist += Math.abs(a.max_tokens - b.max_tokens) / 50;
-  dist += Math.abs(a.frequency_penalty - b.frequency_penalty) / 2.0;
-  dist += Math.abs(a.presence_penalty - b.presence_penalty) / 2.0;
-  dist += Math.abs(a.n - b.n) / 10;
 
   // Categorical parameters — 0 if match, 1 if different
   if (a.model !== b.model) dist += 2;
   if (a.system_prompt !== b.system_prompt) dist += 2;
   if (a.context !== b.context) dist += 2;
   if (JSON.stringify(a.stop) !== JSON.stringify(b.stop)) dist += 1;
-  if (JSON.stringify(a.logit_bias) !== JSON.stringify(b.logit_bias)) dist += 2;
-  if (a.seed !== b.seed) dist += 1;
 
   return dist;
 }
@@ -162,14 +142,10 @@ export function getTopLogprobs(entry: CachedResponse): Array<{ token: string; pr
 export type LastChangedParam =
   | "temperature"
   | "topP"
+  | "topK"
   | "model"
   | "context"
   | "systemPrompt"
-  | "frequencyPenalty"
-  | "presencePenalty"
   | "maxTokens"
   | "stop"
-  | "logitBias"
-  | "n"
-  | "seed"
   | null;

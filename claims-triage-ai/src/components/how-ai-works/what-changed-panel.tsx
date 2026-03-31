@@ -20,6 +20,12 @@ function getExplanation(lastChanged: LastChangedParam, current: CachedResponse |
     case "topP":
       if (current.params.top_p <= 0.3) return { title: "Aggressive Nucleus Sampling", text: "Only the very top tokens are considered. Everything else is eliminated before sampling. This is aggressive filtering — the model can only choose from a tiny set of words." };
       return { title: "Wide Nucleus Sampling", text: "Most of the probability mass is included. The model has a wide range of options to sample from. At top_p = 1.0, all tokens are eligible and temperature alone controls randomness." };
+    case "topK": {
+      const k = current.params.top_k;
+      if (k <= 5) return { title: "Low Top-k — Tight Focus", text: "With top_k this low, the model can only choose from the 5 most probable tokens at each step. This produces very predictable, focused output. Combined with low temperature, outputs become near-deterministic." };
+      if (k <= 40) return { title: "Moderate Top-k — Balanced Sampling", text: "The model considers a reasonable pool of candidate tokens. This is the default range for most applications — enough variety for natural-sounding text without the risk of incoherent outputs." };
+      return { title: "High Top-k — Wide Token Pool", text: "With a large top_k, many tokens remain eligible before sampling. The model has more freedom to surprise you. At very high values, top_k has minimal filtering effect and temperature + top_p dominate the sampling behaviour." };
+    }
     case "model": {
       const ct = current.results.completions[0]?.tokens[0]?.top_logprobs[0];
       const pt = previous?.results.completions[0]?.tokens[0]?.top_logprobs[0];
@@ -33,20 +39,10 @@ function getExplanation(lastChanged: LastChangedParam, current: CachedResponse |
         : { title: "No Context — General Knowledge Only", text: "Without any RAG context, the model falls back on its training data to predict the next word. Adding context dramatically shifts these probabilities." };
     case "systemPrompt":
       return { title: "System Prompt — Same Words, Different World", text: "The system prompt completely reframes how the model interprets the sentence. A horror writer sees menace; a children's author sees adventure. Same tokens in, wildly different probabilities out." };
-    case "frequencyPenalty":
-      return { title: "Frequency Penalty — Fighting Repetition", text: "Watch the longer completions. At 0, the model may repeat words. As penalty increases, it actively avoids reusing tokens. Too high and it starts using bizarre alternatives just to avoid repetition." };
-    case "presencePenalty":
-      return { title: "Presence Penalty — Encouraging Novelty", text: "Similar to frequency penalty but binary — any token that has appeared at all gets penalised, regardless of how often. This encourages the model to explore new topics." };
     case "maxTokens":
       return { title: "Token Generation — Autoregressive Magic", text: "At 1 token, you see a single prediction — the bar chart. As you increase, you see the model building a narrative, each token conditioned on everything before it. This is autoregressive generation." };
     case "stop":
-      return { title: "Stop Sequences — The Brake Pedal", text: "Stop sequences are the model's brake pedal. Without one, it keeps generating until max_tokens. With a full stop, it writes one sentence and halts." };
-    case "logitBias":
-      return { title: "Logit Bias — Rigging the Dice", text: "You've manually adjusted the probability of specific tokens. In production, this is used to prevent banned words, steer outputs towards preferred terminology, or suppress competitor brand names." };
-    case "n":
-      return { title: "Multiple Completions — Exploring Variance", text: "Multiple completions from the same prompt reveal the model's variance. At low temperature, they're nearly identical. At high temperature, each completion diverges." };
-    case "seed":
-      return { title: "Seed — Reproducibility Control", text: "With a fixed seed, the model produces identical output every time (given the same parameters). Enterprise clients who need reproducible outputs use seeds for auditing and compliance." };
+      return { title: "Stop Sequences — The Brake Pedal", text: "Stop sequences tell the model when to stop generating. Without one, it keeps going until max_tokens. With a full stop, it writes one sentence and halts. This is how you control output boundaries." };
     default: return null;
   }
 }
